@@ -1,0 +1,6 @@
+{
+	"name": "pot-ir-selfhosted",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
