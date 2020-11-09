@@ -35,7 +35,14 @@
 					},
 					"enableStaging": false,
 					"parallelCopies": 1000,
-					"enableSkipIncompatibleRow": false,
+					"enableSkipIncompatibleRow": true,
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "log_to_blob",
+							"type": "LinkedServiceReference"
+						},
+						"path": ""
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
@@ -188,7 +195,14 @@
 						"referenceName": "employee_feed",
 						"type": "DatasetReference"
 					},
-					"enableLogging": false,
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "log_to_blob",
+							"type": "LinkedServiceReference"
+						},
+						"path": ""
+					},
+					"enableLogging": true,
 					"storeSettings": {
 						"type": "FileServerReadSettings",
 						"recursive": false
