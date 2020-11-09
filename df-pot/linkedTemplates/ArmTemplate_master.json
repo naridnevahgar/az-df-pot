@@ -1,0 +1,70 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-pot"
+		},
+		"onprem_server_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'onprem_server'"
+		},
+		"potdb_service_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
+		},
+		"onprem_server_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "C:\\Users\\df\\Desktop\\input"
+		},
+		"onprem_server_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "df"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "df-pot_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"onprem_server_password": {
+						"value": "[parameters('onprem_server_password')]"
+					},
+					"potdb_service_connectionString": {
+						"value": "[parameters('potdb_service_connectionString')]"
+					},
+					"onprem_server_properties_typeProperties_host": {
+						"value": "[parameters('onprem_server_properties_typeProperties_host')]"
+					},
+					"onprem_server_properties_typeProperties_userId": {
+						"value": "[parameters('onprem_server_properties_typeProperties_userId')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
