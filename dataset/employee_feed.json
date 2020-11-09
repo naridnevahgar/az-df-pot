@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "FileServerLocation",
-				"fileName": "input.csv",
 				"folderPath": "in"
 			},
 			"columnDelimiter": ",",
