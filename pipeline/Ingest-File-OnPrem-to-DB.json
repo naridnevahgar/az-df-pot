@@ -34,13 +34,14 @@
 						"preCopyScript": "truncate table employee;"
 					},
 					"enableStaging": false,
-					"parallelCopies": 100,
+					"parallelCopies": 1000,
+					"enableSkipIncompatibleRow": false,
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
 							{
 								"source": {
-									"type": "Int16",
+									"type": "Int64",
 									"ordinal": 1
 								},
 								"sink": {
