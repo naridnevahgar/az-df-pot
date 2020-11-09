@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "df-pot"
 		},
+		"log_to_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
+		},
 		"onprem_server_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'onprem_server'"
@@ -14,10 +18,6 @@
 		"potdb_service_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
-		},
-		"log_to_blob_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
 		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
@@ -32,16 +32,6 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/On-PREM-IR')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Ingest-File-OnPrem-to-DB')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -80,7 +70,7 @@
 								"preCopyScript": "truncate table employee;"
 							},
 							"enableStaging": false,
-							"parallelCopies": 100,
+							"parallelCopies": 1,
 							"enableSkipIncompatibleRow": true,
 							"logStorageSettings": {
 								"linkedServiceName": {
@@ -272,67 +262,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/onprem_server')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('onprem_server_properties_typeProperties_host')]",
-					"userId": "[parameters('onprem_server_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('onprem_server_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/employee_feed')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "onprem_server",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FileServerLocation",
-						"folderPath": "in"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": false,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/azure_mysqldb')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -378,22 +307,40 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/potdb_service')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/employee_feed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureMySql",
-				"typeProperties": {
-					"connectionString": "[parameters('potdb_service_connectionString')]"
+				"linkedServiceName": {
+					"referenceName": "onprem_server",
+					"type": "LinkedServiceReference"
 				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation",
+						"folderPath": "in"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
 			]
 		},
 		{
@@ -440,6 +387,59 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/onprem_server')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('onprem_server_properties_typeProperties_host')]",
+					"userId": "[parameters('onprem_server_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('onprem_server_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/potdb_service')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMySql",
+				"typeProperties": {
+					"connectionString": "[parameters('potdb_service_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/On-PREM-IR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
 		}
 	]
 }

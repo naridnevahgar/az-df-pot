@@ -5,13 +5,13 @@
 		"factoryName": {
 			"value": "df-pot"
 		},
+		"log_to_blob_connectionString": {
+			"value": ""
+		},
 		"onprem_server_password": {
 			"value": ""
 		},
 		"potdb_service_connectionString": {
-			"value": ""
-		},
-		"log_to_blob_connectionString": {
 			"value": ""
 		},
 		"onprem_server_properties_typeProperties_host": {
