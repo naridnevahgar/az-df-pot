@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
 		},
+		"log_to_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
+		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "C:\\Users\\df\\Desktop\\input"
@@ -55,6 +59,9 @@
 					},
 					"potdb_service_connectionString": {
 						"value": "[parameters('potdb_service_connectionString')]"
+					},
+					"log_to_blob_connectionString": {
+						"value": "[parameters('log_to_blob_connectionString')]"
 					},
 					"onprem_server_properties_typeProperties_host": {
 						"value": "[parameters('onprem_server_properties_typeProperties_host')]"

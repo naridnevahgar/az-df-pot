@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
 		},
+		"log_to_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
+		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "C:\\Users\\df\\Desktop\\input"
@@ -71,6 +75,25 @@
 				"type": "AzureMySql",
 				"typeProperties": {
 					"connectionString": "[parameters('potdb_service_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/log_to_blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('log_to_blob_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "On-PREM-IR",
@@ -227,13 +250,21 @@
 								"preCopyScript": "truncate table employee;"
 							},
 							"enableStaging": false,
-							"parallelCopies": 100,
+							"parallelCopies": 1000,
+							"enableSkipIncompatibleRow": true,
+							"logStorageSettings": {
+								"linkedServiceName": {
+									"referenceName": "log_to_blob",
+									"type": "LinkedServiceReference"
+								},
+								"path": ""
+							},
 							"translator": {
 								"type": "TabularTranslator",
 								"mappings": [
 									{
 										"source": {
-											"type": "Int16",
+											"type": "Int64",
 											"ordinal": 1
 										},
 										"sink": {
@@ -385,7 +416,14 @@
 								"type": "DatasetReference",
 								"parameters": {}
 							},
-							"enableLogging": false,
+							"logStorageSettings": {
+								"linkedServiceName": {
+									"referenceName": "log_to_blob",
+									"type": "LinkedServiceReference"
+								},
+								"path": ""
+							},
+							"enableLogging": true,
 							"storeSettings": {
 								"type": "FileServerReadSettings",
 								"recursive": false
@@ -399,7 +437,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/employee_feed')]",
 				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
-				"[concat(variables('factoryId'), '/datasets/employee_feed_backup')]"
+				"[concat(variables('factoryId'), '/datasets/employee_feed_backup')]",
+				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
 			]
 		}
 	]
