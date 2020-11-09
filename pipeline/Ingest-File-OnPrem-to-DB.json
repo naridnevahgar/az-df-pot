@@ -34,7 +34,7 @@
 						"preCopyScript": "truncate table employee;"
 					},
 					"enableStaging": false,
-					"parallelCopies": 20,
+					"parallelCopies": 100,
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
