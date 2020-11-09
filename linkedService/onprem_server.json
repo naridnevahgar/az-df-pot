@@ -1,0 +1,17 @@
+{
+	"name": "onprem_server",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "C:\\Users\\df\\Desktop\\input",
+			"userId": "df",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4ZjNiMmM3Ny0yOWM4LTRmN2EtYjc0Ni02NWZjNTU0MDNiMDMiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "On-PREM-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
