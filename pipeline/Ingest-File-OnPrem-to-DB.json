@@ -1,0 +1,8 @@
+{
+	"name": "Ingest-File-OnPrem-to-DB",
+	"properties": {
+		"description": "Load CSV file from on-premise server to MySQL DB (Azure)",
+		"concurrency": 1,
+		"annotations": []
+	}
+}
