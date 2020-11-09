@@ -34,13 +34,13 @@
 						"preCopyScript": "truncate table employee;"
 					},
 					"enableStaging": false,
-					"parallelCopies": 50,
+					"parallelCopies": 20,
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
 							{
 								"source": {
-									"type": "String",
+									"type": "Int16",
 									"ordinal": 1
 								},
 								"sink": {
