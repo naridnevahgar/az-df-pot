@@ -34,7 +34,7 @@
 						"preCopyScript": "truncate table employee;"
 					},
 					"enableStaging": false,
-					"parallelCopies": 20,
+					"parallelCopies": 1,
 					"enableSkipIncompatibleRow": true,
 					"logStorageSettings": {
 						"linkedServiceName": {
