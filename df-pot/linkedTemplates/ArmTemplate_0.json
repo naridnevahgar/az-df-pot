@@ -95,7 +95,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "FileServerLocation",
-						"fileName": "input.csv",
 						"folderPath": "in"
 					},
 					"columnDelimiter": ",",
@@ -214,7 +213,8 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "FileServerReadSettings",
-									"recursive": true
+									"recursive": true,
+									"wildcardFileName": "*.csv"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -312,7 +312,8 @@
 								"storeSettings": {
 									"type": "FileServerReadSettings",
 									"maxConcurrentConnections": 1,
-									"recursive": false
+									"recursive": false,
+									"wildcardFileName": "*.csv"
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
@@ -358,6 +359,38 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Remove_Input_File",
+						"type": "Delete",
+						"dependsOn": [
+							{
+								"activity": "Archive_Input_File",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "employee_feed",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"enableLogging": false,
+							"storeSettings": {
+								"type": "FileServerReadSettings",
+								"recursive": false
+							}
+						}
 					}
 				],
 				"concurrency": 1,

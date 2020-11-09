@@ -6,38 +6,12 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "df-pot"
-		},
-		"onprem_server_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'onprem_server'"
-		},
-		"potdb_service_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
-		},
-		"onprem_server_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "C:\\Users\\df\\Desktop\\input"
-		},
-		"onprem_server_properties_typeProperties_userId": {
-			"type": "string",
-			"defaultValue": "df"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/On-PREM-IR')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Ingest-File-OnPrem-to-DB')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -124,15 +98,13 @@
 						"inputs": [
 							{
 								"referenceName": "employee_feed",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "azure_mysqldb",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -197,15 +169,13 @@
 						"inputs": [
 							{
 								"referenceName": "employee_feed",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "employee_feed_backup",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -231,8 +201,7 @@
 						"typeProperties": {
 							"dataset": {
 								"referenceName": "employee_feed",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"enableLogging": false,
 							"storeSettings": {
@@ -246,33 +215,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/employee_feed')]",
-				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
-				"[concat(variables('factoryId'), '/datasets/employee_feed_backup')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/onprem_server')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('onprem_server_properties_typeProperties_host')]",
-					"userId": "[parameters('onprem_server_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('onprem_server_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+				"[concat(variables('factoryId'), '/datasets/employee_feed')]"
 			]
 		},
 		{
@@ -308,99 +251,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/azure_mysqldb')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "potdb_service",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureMySqlTable",
-				"schema": [
-					{
-						"name": "id",
-						"type": "int",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "name",
-						"type": "varchar",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "dob",
-						"type": "varchar",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "age",
-						"type": "int",
-						"precision": 0,
-						"scale": 0
-					}
-				],
-				"typeProperties": {
-					"tableName": "employee"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/potdb_service')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/potdb_service')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureMySql",
-				"typeProperties": {
-					"connectionString": "[parameters('potdb_service_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/employee_feed_backup')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "onprem_server",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FileServerLocation",
-						"folderPath": "bkp"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
+			"dependsOn": []
 		}
 	]
 }
