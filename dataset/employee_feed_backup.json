@@ -1,0 +1,21 @@
+{
+	"name": "employee_feed_backup",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "onprem_server",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"folderPath": "bkp"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
