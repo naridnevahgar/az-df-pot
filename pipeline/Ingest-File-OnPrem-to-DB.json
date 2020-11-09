@@ -117,7 +117,8 @@
 						"storeSettings": {
 							"type": "FileServerReadSettings",
 							"maxConcurrentConnections": 1,
-							"recursive": false
+							"recursive": false,
+							"wildcardFileName": "*.csv"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
