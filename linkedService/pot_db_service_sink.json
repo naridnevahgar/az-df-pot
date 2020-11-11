@@ -1,0 +1,16 @@
+{
+	"name": "pot_db_service_sink",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureMySql",
+		"typeProperties": {
+			"connectionString": "server=df-pot-db-server.mysql.database.azure.com;port=3306;database=potdb_sink;uid=dbadmin@df-pot-db-server;sslmode=0",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIwOWI3OTU3ZC00MmYwLTRmOWMtOWFhNy1lMmUyZjE1MmJjMGQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "On-PREM-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
