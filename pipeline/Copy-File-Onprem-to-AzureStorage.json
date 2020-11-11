@@ -1,0 +1,7 @@
+{
+	"name": "Copy-File-Onprem-to-AzureStorage",
+	"properties": {
+		"concurrency": 1,
+		"annotations": []
+	}
+}
