@@ -1,6 +1,112 @@
 {
 	"name": "ingest_full_load",
 	"properties": {
+		"activities": [
+			{
+				"name": "full_load_employee_table",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureMySqlSource",
+						"queryTimeout": "02:00:00"
+					},
+					"sink": {
+						"type": "AzureMySqlSink",
+						"writeBatchSize": 10000,
+						"writeBatchTimeout": "00:00:30",
+						"preCopyScript": "truncate employee;"
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "log_to_blob",
+							"type": "LinkedServiceReference"
+						},
+						"path": "4fdec700-897c-4aa4-bd01-6b45118b8061"
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "dob",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "dob",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "age",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "age",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "azure_mysqldb",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "azure_mysql_sink",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
 		"concurrency": 1,
 		"annotations": []
 	}
