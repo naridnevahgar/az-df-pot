@@ -17,6 +17,9 @@
 		"az_fileshare_connectionString": {
 			"value": ""
 		},
+		"pot_db_service_sink_connectionString": {
+			"value": ""
+		},
 		"onprem_server_properties_typeProperties_host": {
 			"value": "C:\\Users\\df\\Desktop\\input"
 		},

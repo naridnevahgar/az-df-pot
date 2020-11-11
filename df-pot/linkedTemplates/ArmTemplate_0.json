@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
 		},
+		"pot_db_service_sink_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'pot_db_service_sink'"
+		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "C:\\Users\\df\\Desktop\\input"
@@ -118,6 +122,25 @@
 				"typeProperties": {
 					"connectionString": "[parameters('az_fileshare_connectionString')]",
 					"fileShare": "dfpotshare"
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pot_db_service_sink')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMySql",
+				"typeProperties": {
+					"connectionString": "[parameters('pot_db_service_sink_connectionString')]"
 				},
 				"connectVia": {
 					"referenceName": "On-PREM-IR",
@@ -311,6 +334,26 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/az_fileshare')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azure_mysql_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pot_db_service_sink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "employee"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pot_db_service_sink')]"
 			]
 		},
 		{
@@ -690,6 +733,128 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/az_fileshare_csvs')]",
 				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_full_load')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "full_load_employee_table",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureMySqlSource",
+								"queryTimeout": "02:00:00"
+							},
+							"sink": {
+								"type": "AzureMySqlSink",
+								"writeBatchSize": 10000,
+								"writeBatchTimeout": "00:00:30",
+								"preCopyScript": "truncate employee;"
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"logStorageSettings": {
+								"linkedServiceName": {
+									"referenceName": "log_to_blob",
+									"type": "LinkedServiceReference"
+								},
+								"path": "4fdec700-897c-4aa4-bd01-6b45118b8061"
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "dob",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "dob",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "age",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "age",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "azure_mysqldb",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "azure_mysql_sink",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"concurrency": 1,
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
+				"[concat(variables('factoryId'), '/datasets/azure_mysql_sink')]",
+				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
 			]
 		}
 	]
