@@ -1,0 +1,7 @@
+{
+	"name": "ingest_full_load",
+	"properties": {
+		"concurrency": 1,
+		"annotations": []
+	}
+}
