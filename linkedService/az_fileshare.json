@@ -1,0 +1,17 @@
+{
+	"name": "az_fileshare",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureFileStorage",
+		"typeProperties": {
+			"connectionString": "DefaultEndpointsProtocol=https;AccountName=dfpotstorage;EndpointSuffix=core.windows.net;",
+			"fileShare": "dfpotshare",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIzYzIzNTMzZi0xYzE3LTRhNWItODA3Yi0wMmE5NTU5NDAyMGMiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "On-PREM-IR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
