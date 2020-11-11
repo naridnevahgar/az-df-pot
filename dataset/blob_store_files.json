@@ -1,0 +1,21 @@
+{
+	"name": "blob_store_files",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "log_to_blob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "ftpoutput"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

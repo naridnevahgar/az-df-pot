@@ -1,0 +1,21 @@
+{
+	"name": "file_copy_onprem_input",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "onprem_server",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"folderPath": "ftp_input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
