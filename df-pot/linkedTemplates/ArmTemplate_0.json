@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
 		},
+		"az_fileshare_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
+		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "C:\\Users\\df\\Desktop\\input"
@@ -94,6 +98,26 @@
 				"type": "AzureMySql",
 				"typeProperties": {
 					"connectionString": "[parameters('potdb_service_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_fileshare')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFileStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('az_fileshare_connectionString')]",
+					"fileShare": "dfpotshare"
 				},
 				"connectVia": {
 					"referenceName": "On-PREM-IR",
@@ -262,6 +286,31 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_fileshare_csvs')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_fileshare",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureFileStorageLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_fileshare')]"
 			]
 		},
 		{
@@ -566,6 +615,81 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]",
 				"[concat(variables('factoryId'), '/datasets/blob_store_files')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Copy-File-AzureStorage-to-OnPrem')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_file_from_azure_files_to_onprem",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureFileStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "ftp_input",
+									"wildcardFileName": "*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "FileServerWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "az_fileshare_csvs",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "file_copy_onprem_input",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az_fileshare_csvs')]",
+				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]"
 			]
 		}
 	]

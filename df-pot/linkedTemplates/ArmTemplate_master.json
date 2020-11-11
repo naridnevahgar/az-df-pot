@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
 		},
+		"az_fileshare_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
+		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "C:\\Users\\df\\Desktop\\input"
@@ -62,6 +66,9 @@
 					},
 					"potdb_service_connectionString": {
 						"value": "[parameters('potdb_service_connectionString')]"
+					},
+					"az_fileshare_connectionString": {
+						"value": "[parameters('az_fileshare_connectionString')]"
 					},
 					"onprem_server_properties_typeProperties_host": {
 						"value": "[parameters('onprem_server_properties_typeProperties_host')]"
