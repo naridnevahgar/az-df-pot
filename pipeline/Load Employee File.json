@@ -19,7 +19,8 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "FileServerReadSettings",
-							"recursive": true
+							"recursive": true,
+							"fileFilter": "@concat('input_',formatDateTime(utcnow(),'yyyyMMdd'),'.csv')"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
