@@ -1,0 +1,27 @@
+{
+	"name": "t_map_employee_data_with_age",
+	"properties": {
+		"folder": {
+			"name": "demo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "i_employee_file_data",
+						"type": "DatasetReference"
+					},
+					"name": "employeedata"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "agemappeddata"
+				}
+			],
+			"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: true,\n\tignoreNoFilesFound: false) ~> employeedata\nemployeedata derive(Column_4 = monthsBetween(toDate(Column_3, 'M/D/yyyy'), currentDate(), true())) ~> agemappeddata"
+		}
+	}
+}
