@@ -1,0 +1,28 @@
+{
+	"name": "i_employee_file_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "onprem_server",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "demo"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"fileName": {
+					"value": "@concat('input_',formatDateTime(utcnow(),'yyyyMMdd'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": "employee_input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
