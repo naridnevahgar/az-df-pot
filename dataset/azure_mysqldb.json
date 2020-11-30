@@ -5,6 +5,9 @@
 			"referenceName": "potdb_service",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "work"
+		},
 		"annotations": [],
 		"type": "AzureMySqlTable",
 		"schema": [

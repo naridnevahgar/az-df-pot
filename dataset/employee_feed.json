@@ -5,6 +5,9 @@
 			"referenceName": "onprem_server",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "work"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

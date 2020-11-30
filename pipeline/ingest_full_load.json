@@ -108,6 +108,9 @@
 			}
 		],
 		"concurrency": 1,
+		"folder": {
+			"name": "work"
+		},
 		"annotations": []
 	}
 }

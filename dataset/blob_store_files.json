@@ -5,6 +5,9 @@
 			"referenceName": "log_to_blob",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "work"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {

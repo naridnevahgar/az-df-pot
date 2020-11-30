@@ -5,6 +5,9 @@
 			"referenceName": "pot_db_service_sink",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "work"
+		},
 		"annotations": [],
 		"type": "AzureMySqlTable",
 		"schema": [],

@@ -5,6 +5,9 @@
 			"referenceName": "az_fileshare",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "work"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
