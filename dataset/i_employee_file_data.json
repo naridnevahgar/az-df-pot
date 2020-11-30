@@ -13,10 +13,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "FileServerLocation",
-				"fileName": {
-					"value": "@concat('input_',formatDateTime(utcnow(),'yyyyMMdd'),'.csv')",
-					"type": "Expression"
-				},
 				"folderPath": "employee_input"
 			},
 			"columnDelimiter": ",",
