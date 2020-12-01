@@ -1,5 +1,5 @@
 {
-	"name": "Load Employee File",
+	"name": "Load Employee File with transformation",
 	"properties": {
 		"activities": [
 			{
