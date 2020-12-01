@@ -1,0 +1,9 @@
+{
+	"name": "Copy file from onprem into cloud",
+	"properties": {
+		"folder": {
+			"name": "demo"
+		},
+		"annotations": []
+	}
+}
