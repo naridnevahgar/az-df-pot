@@ -20,7 +20,10 @@
 						"storeSettings": {
 							"type": "FileServerReadSettings",
 							"recursive": true,
-							"fileFilter": "@concat('input_',formatDateTime(utcnow(),'yyyyMMdd'),'.csv')"
+							"fileFilter": {
+								"value": "@concat('input_',formatDateTime(utcnow(),'yyyyMMdd'),'.csv')",
+								"type": "Expression"
+							}
 						},
 						"formatSettings": {
 							"type": "DelimitedTextReadSettings"
@@ -97,16 +100,13 @@
 					"sink": {
 						"type": "AzureMySqlSink",
 						"writeBatchSize": 10000,
-						"writeBatchTimeout": "00:00:30"
+						"writeBatchTimeout": "00:00:30",
+						"preCopyScript": "truncate employee;"
 					},
 					"enableStaging": false,
 					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
+						"value": "@activity('t_map_employee_data_with_age').output",
+						"type": "Expression"
 					}
 				},
 				"inputs": [
