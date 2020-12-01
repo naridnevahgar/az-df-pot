@@ -114,6 +114,9 @@
 				"typeProperties": {
 					"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
 					"method": "POST",
+					"body": {
+						"hello": "world"
+					},
 					"timeout": "00:10:00"
 				}
 			}
