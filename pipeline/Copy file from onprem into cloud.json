@@ -30,7 +30,8 @@
 					"dataset": {
 						"referenceName": "i_employee_file_data",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
