@@ -987,7 +987,8 @@
 								"referenceName": "i_employee_file_data",
 								"type": "DatasetReference",
 								"parameters": {}
-							}
+							},
+							"firstRowOnly": false
 						}
 					},
 					{
