@@ -47,7 +47,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Check if input file exists').output.count > 0",
+						"value": "@greater(int(activity('Check if input file exists').output.count), 0)",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
