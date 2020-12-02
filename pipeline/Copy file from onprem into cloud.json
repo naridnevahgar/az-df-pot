@@ -54,11 +54,22 @@
 					"ifFalseActivities": [
 						{
 							"name": "Send failure email",
-							"type": "WebHook",
+							"type": "WebActivity",
 							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:00:10",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
 							"userProperties": [],
 							"typeProperties": {
 								"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
+								"connectVia": {
+									"referenceName": "On-PREM-IR",
+									"type": "IntegrationRuntimeReference"
+								},
 								"method": "POST",
 								"headers": {
 									"df": {
@@ -76,8 +87,7 @@
 								},
 								"body": {
 									"status": "failed - no input file found"
-								},
-								"timeout": "00:10:00"
+								}
 							}
 						}
 					],
