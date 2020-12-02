@@ -112,7 +112,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
+					"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
 					"method": "POST",
 					"headers": {
 						"df": {
@@ -147,7 +147,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
+					"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
 					"method": "POST",
 					"headers": {
 						"df": {
@@ -182,7 +182,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
+					"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
 					"method": "POST",
 					"headers": {
 						"df": {
