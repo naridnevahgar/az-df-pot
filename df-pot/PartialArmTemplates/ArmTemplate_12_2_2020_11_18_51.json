@@ -1,0 +1,252 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-pot"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Copy file from onprem into cloud')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Check if input file exists",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "ftp_input",
+									"wildcardFileName": "employee_feed_*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "i_employee_file_data",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Check file count",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Check if input file exists",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@greater(int(activity('Check if input file exists').output.count), 0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Send failure email",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:00:10",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
+										"connectVia": {
+											"referenceName": "On-PREM-IR",
+											"type": "IntegrationRuntimeReference"
+										},
+										"method": "POST",
+										"headers": {
+											"df": {
+												"value": "@pipeline().DataFactory",
+												"type": "Expression"
+											},
+											"pipeline": {
+												"value": "@pipeline().Pipeline",
+												"type": "Expression"
+											},
+											"id": {
+												"value": "@pipeline().RunId",
+												"type": "Expression"
+											}
+										},
+										"body": {
+											"status": "failed - no input file found"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Copy files to Azure Blob",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "FileServerReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": "ftp_input",
+												"wildcardFileName": "employee_feed_*.csv"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "i_employee_file_data",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "blob_store_files",
+											"type": "DatasetReference"
+										}
+									]
+								},
+								{
+									"name": "Send completion email",
+									"type": "WebHook",
+									"dependsOn": [
+										{
+											"activity": "Copy files to Azure Blob",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
+										"method": "POST",
+										"headers": {
+											"df": {
+												"value": "@pipeline().DataFactory",
+												"type": "Expression"
+											},
+											"pipeline": {
+												"value": "@pipeline().Pipeline",
+												"type": "Expression"
+											},
+											"id": {
+												"value": "@pipeline().RunId",
+												"type": "Expression"
+											}
+										},
+										"body": {
+											"status": "success"
+										},
+										"timeout": "00:10:00"
+									}
+								},
+								{
+									"name": "Send error email",
+									"type": "WebHook",
+									"dependsOn": [
+										{
+											"activity": "Copy files to Azure Blob",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
+										"method": "POST",
+										"headers": {
+											"df": {
+												"value": "@pipeline().DataFactory",
+												"type": "Expression"
+											},
+											"pipeline": {
+												"value": "@pipeline().Pipeline",
+												"type": "Expression"
+											},
+											"id": {
+												"value": "@pipeline().RunId",
+												"type": "Expression"
+											}
+										},
+										"body": {
+											"status": "error on db inserts"
+										},
+										"timeout": "00:10:00"
+									}
+								}
+							]
+						}
+					}
+				],
+				"folder": {
+					"name": "demo"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
