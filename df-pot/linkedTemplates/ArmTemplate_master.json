@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "df-pot"
 		},
+		"az_fileshare_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
+		},
 		"log_to_blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
@@ -15,17 +19,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'onprem_server'"
 		},
-		"potdb_service_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
-		},
-		"az_fileshare_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
-		},
 		"pot_db_service_sink_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'pot_db_service_sink'"
+		},
+		"potdb_service_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
 		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
@@ -62,20 +62,20 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"az_fileshare_connectionString": {
+						"value": "[parameters('az_fileshare_connectionString')]"
+					},
 					"log_to_blob_connectionString": {
 						"value": "[parameters('log_to_blob_connectionString')]"
 					},
 					"onprem_server_password": {
 						"value": "[parameters('onprem_server_password')]"
 					},
-					"potdb_service_connectionString": {
-						"value": "[parameters('potdb_service_connectionString')]"
-					},
-					"az_fileshare_connectionString": {
-						"value": "[parameters('az_fileshare_connectionString')]"
-					},
 					"pot_db_service_sink_connectionString": {
 						"value": "[parameters('pot_db_service_sink_connectionString')]"
+					},
+					"potdb_service_connectionString": {
+						"value": "[parameters('potdb_service_connectionString')]"
 					},
 					"onprem_server_properties_typeProperties_host": {
 						"value": "[parameters('onprem_server_properties_typeProperties_host')]"

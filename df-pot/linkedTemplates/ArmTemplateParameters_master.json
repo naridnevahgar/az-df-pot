@@ -5,19 +5,19 @@
 		"factoryName": {
 			"value": "df-pot"
 		},
+		"az_fileshare_connectionString": {
+			"value": ""
+		},
 		"log_to_blob_connectionString": {
 			"value": ""
 		},
 		"onprem_server_password": {
 			"value": ""
 		},
-		"potdb_service_connectionString": {
-			"value": ""
-		},
-		"az_fileshare_connectionString": {
-			"value": ""
-		},
 		"pot_db_service_sink_connectionString": {
+			"value": ""
+		},
+		"potdb_service_connectionString": {
 			"value": ""
 		},
 		"onprem_server_properties_typeProperties_host": {

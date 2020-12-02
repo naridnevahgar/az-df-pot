@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "df-pot"
 		},
+		"az_fileshare_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
+		},
 		"log_to_blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
@@ -15,17 +19,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'onprem_server'"
 		},
-		"potdb_service_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
-		},
-		"az_fileshare_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
-		},
 		"pot_db_service_sink_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'pot_db_service_sink'"
+		},
+		"potdb_service_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
 		},
 		"onprem_server_properties_typeProperties_host": {
 			"type": "string",
@@ -49,6 +49,26 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_fileshare')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFileStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('az_fileshare_connectionString')]",
+					"fileShare": "dfpotshare"
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/log_to_blob')]",
@@ -94,45 +114,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/potdb_service')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureMySql",
-				"typeProperties": {
-					"connectionString": "[parameters('potdb_service_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/az_fileshare')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureFileStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('az_fileshare_connectionString')]",
-					"fileShare": "dfpotshare"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/pot_db_service_sink')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -152,6 +133,76 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/potdb_service')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMySql",
+				"typeProperties": {
+					"connectionString": "[parameters('potdb_service_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "On-PREM-IR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az_fileshare_csvs')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az_fileshare",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "work"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureFileStorageLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az_fileshare')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/azure_mysql_sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pot_db_service_sink",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "work"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": "employee"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pot_db_service_sink')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azure_mysqldb')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -159,6 +210,9 @@
 				"linkedServiceName": {
 					"referenceName": "potdb_service",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "work"
 				},
 				"annotations": [],
 				"type": "AzureMySqlTable",
@@ -197,6 +251,35 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/blob_store_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "log_to_blob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "work"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "ftpoutput"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/employee_feed')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -204,6 +287,9 @@
 				"linkedServiceName": {
 					"referenceName": "onprem_server",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "work"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -242,6 +328,9 @@
 					"referenceName": "onprem_server",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "work"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -268,6 +357,9 @@
 					"referenceName": "onprem_server",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "work"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -286,64 +378,55 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/blob_store_files')]",
+			"name": "[concat(parameters('factoryName'), '/i_employee_file_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "log_to_blob",
+					"referenceName": "onprem_server",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "demo"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "ftpoutput"
+						"type": "FileServerLocation",
+						"folderPath": "employee_input"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
 					"quoteChar": "\""
 				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/az_fileshare_csvs')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "az_fileshare",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureFileStorageLocation"
+				"schema": [
+					{
+						"type": "String"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_fileshare')]"
+				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/azure_mysql_sink')]",
+			"name": "[concat(parameters('factoryName'), '/o_employee_db_table')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "pot_db_service_sink",
+					"referenceName": "potdb_service",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "demo"
 				},
 				"annotations": [],
 				"type": "AzureMySqlTable",
@@ -353,7 +436,163 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/pot_db_service_sink')]"
+				"[concat(variables('factoryId'), '/linkedServices/potdb_service')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Copy-File-AzureStorage-to-OnPrem')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_file_from_azure_files_to_onprem",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureFileStorageReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "ftp_input",
+									"wildcardFileName": "*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "FileServerWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "az_fileshare_csvs",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "file_copy_onprem_input",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "work"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az_fileshare_csvs')]",
+				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Copy-File-Onprem-to-AzureStorage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_file_from_onprem_to_azure_storage",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "file_copy_onprem_input",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "blob_store_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"concurrency": 1,
+				"folder": {
+					"name": "work"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]",
+				"[concat(variables('factoryId'), '/datasets/blob_store_files')]"
 			]
 		},
 		{
@@ -576,6 +815,9 @@
 					}
 				],
 				"concurrency": 1,
+				"folder": {
+					"name": "work"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -583,156 +825,6 @@
 				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
 				"[concat(variables('factoryId'), '/datasets/employee_feed_backup')]",
 				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Copy-File-Onprem-to-AzureStorage')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "copy_file_from_onprem_to_azure_storage",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "FileServerReadSettings",
-									"recursive": true,
-									"wildcardFileName": "*.csv"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "file_copy_onprem_input",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "blob_store_files",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"concurrency": 1,
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]",
-				"[concat(variables('factoryId'), '/datasets/blob_store_files')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Copy-File-AzureStorage-to-OnPrem')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "copy_file_from_azure_files_to_onprem",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureFileStorageReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": "ftp_input",
-									"wildcardFileName": "*.csv"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "FileServerWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "az_fileshare_csvs",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "file_copy_onprem_input",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/az_fileshare_csvs')]",
-				"[concat(variables('factoryId'), '/datasets/file_copy_onprem_input')]"
 			]
 		},
 		{
@@ -849,12 +941,237 @@
 					}
 				],
 				"concurrency": 1,
+				"folder": {
+					"name": "work"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
 				"[concat(variables('factoryId'), '/datasets/azure_mysql_sink')]",
 				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Copy file from onprem into cloud')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Check if input file exists",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "ftp_input",
+									"wildcardFileName": "employee_feed_*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "i_employee_file_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Copy files to Azure Blob",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Check if input file exists",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "ftp_input",
+									"wildcardFileName": "employee_feed_*.csv"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "i_employee_file_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "blob_store_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Send failure email",
+						"type": "WebHook",
+						"dependsOn": [
+							{
+								"activity": "Check if input file exists",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
+							"method": "POST",
+							"headers": {
+								"df": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								},
+								"pipeline": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								},
+								"id": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"body": {
+								"status": "failed - no input file found"
+							},
+							"timeout": "00:10:00"
+						}
+					},
+					{
+						"name": "Send completion email",
+						"type": "WebHook",
+						"dependsOn": [
+							{
+								"activity": "Copy files to Azure Blob",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
+							"method": "POST",
+							"headers": {
+								"df": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								},
+								"pipeline": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								},
+								"id": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"body": {
+								"status": "success"
+							},
+							"timeout": "00:10:00"
+						}
+					},
+					{
+						"name": "Send error email",
+						"type": "WebHook",
+						"dependsOn": [
+							{
+								"activity": "Copy files to Azure Blob",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://webhook.site/#!/fec40063-af93-4593-90f1-b3194f9bd48c/1c86334d-3779-46ce-bb19-1a96c696a0b7/1",
+							"method": "POST",
+							"headers": {
+								"df": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								},
+								"pipeline": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								},
+								"id": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"body": {
+								"status": "error on db inserts"
+							},
+							"timeout": "00:10:00"
+						}
+					}
+				],
+				"folder": {
+					"name": "demo"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/i_employee_file_data')]",
+				"[concat(variables('factoryId'), '/datasets/blob_store_files')]"
 			]
 		}
 	]

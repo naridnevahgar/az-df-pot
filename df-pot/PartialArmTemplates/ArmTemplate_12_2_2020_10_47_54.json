@@ -6,34 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "df-pot"
-		},
-		"az_fileshare_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'az_fileshare'"
-		},
-		"log_to_blob_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'log_to_blob'"
-		},
-		"onprem_server_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'onprem_server'"
-		},
-		"pot_db_service_sink_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'pot_db_service_sink'"
-		},
-		"potdb_service_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'potdb_service'"
-		},
-		"onprem_server_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "C:\\Users\\df\\Desktop\\input"
-		},
-		"onprem_server_properties_typeProperties_userId": {
-			"type": "string",
-			"defaultValue": "df"
 		}
 	},
 	"variables": {
@@ -95,15 +67,13 @@
 						"inputs": [
 							{
 								"referenceName": "az_fileshare_csvs",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "file_copy_onprem_input",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -172,15 +142,13 @@
 						"inputs": [
 							{
 								"referenceName": "file_copy_onprem_input",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "blob_store_files",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -290,15 +258,13 @@
 						"inputs": [
 							{
 								"referenceName": "employee_feed",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "azure_mysqldb",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -363,15 +329,13 @@
 						"inputs": [
 							{
 								"referenceName": "employee_feed",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "employee_feed_backup",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -397,8 +361,7 @@
 						"typeProperties": {
 							"dataset": {
 								"referenceName": "employee_feed",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							},
 							"logStorageSettings": {
 								"linkedServiceName": {
@@ -424,8 +387,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/employee_feed')]",
 				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
-				"[concat(variables('factoryId'), '/datasets/employee_feed_backup')]",
-				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
+				"[concat(variables('factoryId'), '/datasets/employee_feed_backup')]"
 			]
 		},
 		{
@@ -528,15 +490,13 @@
 						"inputs": [
 							{
 								"referenceName": "azure_mysqldb",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "azure_mysql_sink",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					}
@@ -549,8 +509,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/azure_mysqldb')]",
-				"[concat(variables('factoryId'), '/datasets/azure_mysql_sink')]",
-				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
+				"[concat(variables('factoryId'), '/datasets/azure_mysql_sink')]"
 			]
 		},
 		{
@@ -577,9 +536,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/az_fileshare')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/azure_mysql_sink')]",
@@ -600,9 +557,7 @@
 					"tableName": "employee"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/pot_db_service_sink')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/azure_mysqldb')]",
@@ -648,9 +603,7 @@
 					"tableName": "employee"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/potdb_service')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/blob_store_files')]",
@@ -677,9 +630,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/log_to_blob')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/employee_feed')]",
@@ -717,9 +668,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/employee_feed_backup')]",
@@ -746,9 +695,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/file_copy_onprem_input')]",
@@ -775,9 +722,7 @@
 				},
 				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/i_employee_file_data')]",
@@ -814,9 +759,7 @@
 					}
 				]
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/onprem_server')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/o_employee_db_table')]",
@@ -836,119 +779,6 @@
 				"typeProperties": {
 					"tableName": "employee"
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/potdb_service')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/az_fileshare')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureFileStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('az_fileshare_connectionString')]",
-					"fileShare": "dfpotshare"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/log_to_blob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('log_to_blob_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/onprem_server')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('onprem_server_properties_typeProperties_host')]",
-					"userId": "[parameters('onprem_server_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('onprem_server_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pot_db_service_sink')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureMySql",
-				"typeProperties": {
-					"connectionString": "[parameters('pot_db_service_sink_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/potdb_service')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureMySql",
-				"typeProperties": {
-					"connectionString": "[parameters('potdb_service_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "On-PREM-IR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-PREM-IR')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/On-PREM-IR')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
 			},
 			"dependsOn": []
 		},
@@ -985,8 +815,7 @@
 							},
 							"dataset": {
 								"referenceName": "i_employee_file_data",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						}
 					},
@@ -1046,15 +875,13 @@
 						"inputs": [
 							{
 								"referenceName": "i_employee_file_data",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
 							{
 								"referenceName": "blob_store_files",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
