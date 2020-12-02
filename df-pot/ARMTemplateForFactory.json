@@ -200,7 +200,7 @@
 								},
 								{
 									"name": "Send completion email",
-									"type": "WebHook",
+									"type": "WebActivity",
 									"dependsOn": [
 										{
 											"activity": "Copy files to Azure Blob",
@@ -209,6 +209,13 @@
 											]
 										}
 									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
@@ -229,13 +236,12 @@
 										},
 										"body": {
 											"status": "success"
-										},
-										"timeout": "00:10:00"
+										}
 									}
 								},
 								{
 									"name": "Send error email",
-									"type": "WebHook",
+									"type": "WebActivity",
 									"dependsOn": [
 										{
 											"activity": "Copy files to Azure Blob",
@@ -244,6 +250,13 @@
 											]
 										}
 									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
 									"userProperties": [],
 									"typeProperties": {
 										"url": "https://webhook.site/fec40063-af93-4593-90f1-b3194f9bd48c",
@@ -263,9 +276,8 @@
 											}
 										},
 										"body": {
-											"status": "error on db inserts"
-										},
-										"timeout": "00:10:00"
+											"status": "failed - error on db inserts"
+										}
 									}
 								}
 							]
